@@ -1,0 +1,15 @@
+{
+  "name": "skeleton-app/Session",
+  "description": "SkeletonApp Module Session",
+  "type": "modules",
+  "require": {
+    "php": ">=8.2"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-main": "dev"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": false
+}
