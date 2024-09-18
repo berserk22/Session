@@ -1,5 +1,5 @@
 {
-  "name": "skeleton-app/Session",
+  "name": "skeleton-app/session",
   "description": "SkeletonApp Module Session",
   "type": "modules",
   "require": {
