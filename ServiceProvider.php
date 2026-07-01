@@ -18,11 +18,8 @@ class ServiceProvider extends Provider {
     public function init(): void {
         $container=$this->getContainer();
         if (!$container->has('Session\Manager')){
-            $container->set('Session\Manager', function(){
-                $manager = new SessionManager($this);
-                $manager->registry();
-                return $manager;
-            });
+            $sessionManager = new SessionManager($this);
+            $container->set('Session\Manager', $sessionManager->registry());
         }
     }
 

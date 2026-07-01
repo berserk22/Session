@@ -89,8 +89,9 @@ class SessionManager extends SessionHandler {
      * @throws NotFoundException
      * @throws AddressNotFoundException
      */
-    public function registry(): void {
+    public function registry() {
         if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_cache_limiter(''); // verhindert no-store Header
             session_start($this->options);
         }
 
@@ -106,11 +107,11 @@ class SessionManager extends SessionHandler {
         }
 
         if ($session->user_id === 0 && filter_input(INPUT_SERVER, "REMOTE_ADDR")!=="172.17.0.1") {
-            $statsEntity = $this->getStatisticManager()->getStatsEntity();
+           // $statsEntity = $this->getStatisticManager()->getStatsEntity();
             $server = $_SERVER;
             $ipAddress = $server['REMOTE_ADDR'];
 
-            $stats = new $statsEntity();
+            /*$stats = new $statsEntity();
             $stats->session_id=self::getSessionId();
             $stats->ip=$ipAddress;
             $stats->os=$this->getStatisticModel()->getPlatform($server);
@@ -118,9 +119,30 @@ class SessionManager extends SessionHandler {
             $stats->country=$this->getStatisticModel()->getCountry($server);
             $stats->city=$this->getStatisticModel()->getCity($server);
             $stats->referer=$server["REQUEST_URI"];
-            $stats->save();
+            $stats->save();*/
         }
+        return $this;
     }
+
+    protected function shouldStartSession(): bool {
+        $uri = $_SERVER['REQUEST_URI'] ?? '';
+
+        // KEINE Session für SEO/Public Seiten
+        if (
+            str_starts_with($uri, '/kia/')
+            || str_starts_with($uri, '/fahrzeug/')
+            || str_starts_with($uri, '/modelle/')
+        ) {
+            return false;
+        }
+
+        // Session nur bei Login / Admin / API / Formularen
+        if (str_starts_with($uri, '/dashboard')) {
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * @return array
@@ -206,6 +228,9 @@ class SessionManager extends SessionHandler {
      * @return bool
      */
     public function has(string $name): bool {
+        if (is_null($_SESSION)){
+            $_SESSION=[];
+        }
         return array_key_exists($name, $_SESSION);
     }
 

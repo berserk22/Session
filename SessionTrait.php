@@ -30,9 +30,7 @@ trait SessionTrait {
      */
     public function getSessionEntity(): Session|string {
         if (!$this->getContainer()->has($this->session)){
-            $this->getContainer()->set($this->session, function(){
-                return 'Modules\Session\Db\Models\Session';
-            });
+            $this->getContainer()->set($this->session, 'Modules\Session\Db\Models\Session');
         }
         return $this->getContainer()->get($this->session);
     }
@@ -43,6 +41,9 @@ trait SessionTrait {
      * @throws NotFoundException
      */
     public function getStatisticManager(): StatManager {
+        if (!$this->getContainer()->has('Statistic\Manager')){
+            $this->getContainer()->set('Statistic\Manager', new StatManager($this));
+        }
         return $this->getContainer()->get('Statistic\Manager');
     }
 
